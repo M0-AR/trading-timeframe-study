@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it."
+title: "Timeframe Is a Parameter, Not a Truth: A Pre-Registered, Cost-Aware Evaluation of Trading Signals"
+abstract: >-
+  A pre-registered evaluation of 1,008 timeframe-dependent trading strategies
+  on Binance 1-minute and 5-minute data and EODHD daily equities, spanning
+  six decision timeframes from 5 minutes to 1 day. The study tests claims
+  about volatility scaling, multi-timeframe filters, transaction-cost drag,
+  backtest overfitting, budget-constrained timeframe choice, and live
+  multi-venue signal agreement. The best in-sample strategy fails out of
+  sample, higher-timeframe filters reduce risk and turnover without adding
+  much gross alpha, and cost drag rises by orders of magnitude at short
+  horizons.
+authors:
+  - name: "Timeframe Validity Project"
+version: 1.0.0
+date-released: 2026-10-21
+license: MIT
+type: software
+keywords:
+  - timeframe analysis
+  - multiple timeframes
+  - transaction costs
+  - backtest overfitting
+  - market microstructure
+  - reproducibility

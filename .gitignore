@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+data/cache/
+data/raw/
+results/*.parquet
+results/*.pkl
+results/live_shadow.jsonl
+.DS_Store

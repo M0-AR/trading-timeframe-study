@@ -1,0 +1,24 @@
+services:
+  research:
+    build: .
+    container_name: tfv-research
+    command: ["python", "-m", "tfvalidity.cli", "all"]
+    volumes:
+      - ./data:/app/data
+      - ./results:/app/results
+      - ./figures:/app/figures
+    environment:
+      TFV_SEED: "20261021"
+    shm_size: "1gb"
+    restart: "no"
+
+  live-shadow:
+    build: .
+    container_name: tfv-live-shadow
+    command: ["python", "-m", "tfvalidity.cli", "live", "--loop", "--interval-seconds", "3600"]
+    profiles: ["live"]
+    volumes:
+      - ./results:/app/results
+    environment:
+      TFV_SEED: "20261021"
+    restart: unless-stopped

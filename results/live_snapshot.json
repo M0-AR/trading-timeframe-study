@@ -1,0 +1,61 @@
+{
+  "snapshot": {
+    "venues": {
+      "timestamp": "2026-10-21T10:36:04.347772+00:00",
+      "venues": {
+        "kraken": {
+          "last": 83253.0,
+          "source": "ticker"
+        },
+        "coinbase": {
+          "last": 83249.47,
+          "source": "ticker"
+        },
+        "okx": {
+          "last": 83349.4,
+          "source": "ticker"
+        }
+      },
+      "max_deviation_bps": 12.003680023426888,
+      "n_venues": 3
+    },
+    "signal": {
+      "as_of": "2026-10-21T10:00:00+00:00",
+      "layers": {
+        "1h": {
+          "ma_20_100": 1.0,
+          "tsmom_50": 1.0,
+          "close": 83253.0,
+          "n_bars": 720,
+          "last_bar": "2026-10-21T10:00:00+00:00"
+        },
+        "4h": {
+          "ma_20_100": -1.0,
+          "tsmom_50": 1.0,
+          "close": 83236.0,
+          "n_bars": 720,
+          "last_bar": "2026-10-21T08:00:00+00:00"
+        },
+        "1d": {
+          "ma_20_100": 1.0,
+          "tsmom_50": 1.0,
+          "close": 83236.0,
+          "n_bars": 720,
+          "last_bar": "2026-10-21T00:00:00+00:00"
+        }
+      },
+      "aligned": false,
+      "n_distinct_signs": 2,
+      "agreement_count": 2,
+      "payload_hash": "d2d081702d1d9f64249bd8ccace883ff669ce1fcaaf7d9d568ed96921e0c5a70"
+    },
+    "tolerance_bps": 50.0,
+    "within_tolerance": true
+  },
+  "log_verification": {
+    "records": 3,
+    "valid": true,
+    "head": "0550ef2fa6c69870f713a66549c3dc0dd3c90c007fbc6477a9818473dfbb6657"
+  },
+  "log_path": "/home/md/src/timeframe-validity/results/live_shadow.jsonl"
+}

@@ -1,0 +1,149 @@
+{
+  "crypto": {
+    "BTCUSDT": {
+      "rows": 604299,
+      "start": "2021-01-01T00:00:00+00:00",
+      "end": "2026-09-30T23:55:00+00:00",
+      "expected_spacing_seconds": 300,
+      "n_gaps": 7,
+      "max_gap_seconds": 17100,
+      "missing_bars_estimate": 213,
+      "monotonic": true,
+      "duplicates": 0,
+      "nonpositive_prices": 0,
+      "high_low_violations": 0,
+      "median_quote_volume_daily": 1927455243.548076
+    },
+    "ETHUSDT": {
+      "rows": 604299,
+      "start": "2021-01-01T00:00:00+00:00",
+      "end": "2026-09-30T23:55:00+00:00",
+      "expected_spacing_seconds": 300,
+      "n_gaps": 7,
+      "max_gap_seconds": 17100,
+      "missing_bars_estimate": 213,
+      "monotonic": true,
+      "duplicates": 0,
+      "nonpositive_prices": 0,
+      "high_low_violations": 0,
+      "median_quote_volume_daily": 1088137895.952771
+    },
+    "SOLUSDT": {
+      "rows": 604299,
+      "start": "2021-01-01T00:00:00+00:00",
+      "end": "2026-09-30T23:55:00+00:00",
+      "expected_spacing_seconds": 300,
+      "n_gaps": 7,
+      "max_gap_seconds": 17100,
+      "missing_bars_estimate": 213,
+      "monotonic": true,
+      "duplicates": 0,
+      "nonpositive_prices": 0,
+      "high_low_violations": 0,
+      "median_quote_volume_daily": 280674757.84697
+    },
+    "BTCUSDT:1m": {
+      "rows": 3021487,
+      "start": "2021-01-01T00:00:00+00:00",
+      "end": "2026-09-30T23:59:00+00:00",
+      "expected_spacing_seconds": 60,
+      "n_gaps": 7,
+      "max_gap_seconds": 17100,
+      "missing_bars_estimate": 1073,
+      "monotonic": true,
+      "duplicates": 0,
+      "nonpositive_prices": 0,
+      "high_low_violations": 0
+    }
+  },
+  "equities": {
+    "AAPL.US": {
+      "rows": 6740,
+      "start": "2000-01-03",
+      "end": "2026-10-20",
+      "expected_spacing_seconds": 86400,
+      "n_gaps": 247,
+      "max_gap_seconds": 604800,
+      "missing_bars_estimate": 252,
+      "monotonic": true,
+      "duplicates": 0,
+      "nonpositive_prices": 0,
+      "high_low_violations": 0,
+      "calendar": "business_days",
+      "max_gap_business_days": 4,
+      "note": "business-day calendar includes exchange holidays",
+      "corwin_schultz": {
+        "median_bps": 10.150210852325927,
+        "mean_bps": 60.776419968872176,
+        "p90_bps": 176.61742770155044,
+        "n": 6739
+      }
+    },
+    "TSLA.US": {
+      "rows": 4103,
+      "start": "2010-06-29",
+      "end": "2026-10-20",
+      "expected_spacing_seconds": 86400,
+      "n_gaps": 152,
+      "max_gap_seconds": 432000,
+      "missing_bars_estimate": 153,
+      "monotonic": true,
+      "duplicates": 0,
+      "nonpositive_prices": 0,
+      "high_low_violations": 0,
+      "calendar": "business_days",
+      "max_gap_business_days": 2,
+      "note": "business-day calendar includes exchange holidays",
+      "corwin_schultz": {
+        "median_bps": 4.117900541295146,
+        "mean_bps": 84.56069318126218,
+        "p90_bps": 249.01343190994868,
+        "n": 4102
+      }
+    },
+    "AMZN.US": {
+      "rows": 6740,
+      "start": "2000-01-03",
+      "end": "2026-10-20",
+      "expected_spacing_seconds": 86400,
+      "n_gaps": 247,
+      "max_gap_seconds": 604800,
+      "missing_bars_estimate": 252,
+      "monotonic": true,
+      "duplicates": 0,
+      "nonpositive_prices": 0,
+      "high_low_violations": 0,
+      "calendar": "business_days",
+      "max_gap_business_days": 4,
+      "note": "business-day calendar includes exchange holidays",
+      "corwin_schultz": {
+        "median_bps": 13.505715779615665,
+        "mean_bps": 72.51557941509697,
+        "p90_bps": 198.41613725813636,
+        "n": 6739
+      }
+    },
+    "VTI.US": {
+      "rows": 6385,
+      "start": "2001-05-31",
+      "end": "2026-10-20",
+      "expected_spacing_seconds": 86400,
+      "n_gaps": 234,
+      "max_gap_seconds": 604800,
+      "missing_bars_estimate": 239,
+      "monotonic": true,
+      "duplicates": 0,
+      "nonpositive_prices": 0,
+      "high_low_violations": 0,
+      "calendar": "business_days",
+      "max_gap_business_days": 4,
+      "note": "business-day calendar includes exchange holidays",
+      "corwin_schultz": {
+        "median_bps": 0.0,
+        "mean_bps": 24.931842211592972,
+        "p90_bps": 71.465910929042,
+        "n": 6384
+      }
+    }
+  }
+}

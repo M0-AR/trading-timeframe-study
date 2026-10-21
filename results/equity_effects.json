@@ -1,0 +1,29 @@
+{
+  "htf_filter": {
+    "n_pairs": 16,
+    "mean_net_sharpe_diff": 0.24825133140012642,
+    "median_net_sharpe_diff": 0.27294196848428876,
+    "frac_positive": 0.9375,
+    "mean_gross_sharpe_diff": 0.2456056764417577,
+    "median_vol_ratio": 0.709466864180256,
+    "median_turnover_ratio": 0.5197935892123997
+  },
+  "htf_trigger": {
+    "n_pairs": 16,
+    "mean_net_sharpe_diff": 0.2949860201375605,
+    "median_net_sharpe_diff": 0.3426602289655665,
+    "frac_positive": 0.8125,
+    "mean_gross_sharpe_diff": 0.286857184569981,
+    "median_vol_ratio": 0.9031917538229193,
+    "median_turnover_ratio": 0.12658110549969884
+  },
+  "confluence3": {
+    "n_pairs": 16,
+    "mean_net_sharpe_diff": 0.33469304541611966,
+    "median_net_sharpe_diff": 0.36033755148113084,
+    "frac_positive": 1.0,
+    "mean_gross_sharpe_diff": 0.33085630308190916,
+    "median_vol_ratio": 0.6715717117589377,
+    "median_turnover_ratio": 0.3919387979549247
+  }
+}

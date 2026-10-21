@@ -1,0 +1,23 @@
+crypto:
+  venue: Binance Spot
+  taker_fee_bps: 10.0
+  maker_fee_bps: 10.0
+  bnb_discount_fee_bps: 7.5
+  half_spread_bps: 1.0
+  slippage_bps: 1.0
+  total_bps: 12.0
+  notes: >
+    Base case is the standard non-VIP taker tier (10 bp) plus one basis point
+    of half-spread and one basis point of slippage. Sensitivity analysis runs
+    0, 5, 12, 25 and 50 bp per unit turnover.
+
+equities:
+  venue: US consolidated
+  commission_bps: 1.0
+  half_spread_bps: 2.0
+  slippage_bps: 1.0
+  total_bps: 4.0
+  notes: >
+    Discount-broker commission plus a conservative half-spread and slippage
+    estimate for liquid large caps. Corwin-Schultz high-low spreads are
+    computed as an independent, data-driven cross-check.
