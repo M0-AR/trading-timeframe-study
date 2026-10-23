@@ -13,7 +13,9 @@
 [![PBO](https://img.shields.io/badge/PBO-15.6%25-orange)](results/stats.json)
 [![Version](https://img.shields.io/badge/version-1.0.0-lightgrey)](CITATION.cff)
 
-[One-minute summary](#one-minute-summary) · [Evidence](#the-evidence-in-one-screen) · [Beginner guide](#-beginner-guide--read-this-and-you-are-a-professional) · [Playbook](#the-playbook-use-this-tomorrow) · [Interactive preview](preview.html) · [Technical paper](docs/PAPER.md)
+[One-minute summary](#one-minute-summary) · [Evidence](#the-evidence-in-one-screen) · [Beginner guide](#-beginner-guide--read-this-and-you-are-a-professional) · [Playbook](#the-playbook-use-this-tomorrow) · [Interactive preview](https://m0-ar.github.io/trading-timeframe-study/preview.html) · [Technical paper](docs/PAPER.md)
+
+**Live pages:** [Home](https://m0-ar.github.io/trading-timeframe-study/) · [Preview](https://m0-ar.github.io/trading-timeframe-study/preview.html) · [Preview via /docs](https://m0-ar.github.io/trading-timeframe-study/docs/preview.html)
 
 </div>
 
@@ -83,7 +85,7 @@ You do not need a finance degree. The beginner guide below defines every term fr
 | **Estimate the cost of speed** | Median cost drag and turnover by timeframe | Compare a proposed cadence with the cost curve in Section 1. |
 | **Choose an operating cadence** | A decision-budget framework (TBMT) | Start with the number of decisions you can genuinely make per week. |
 | **Screen a vendor or signal service** | A checklist of the questions most vendors hope you will not ask | Use the ten questions in the beginner guide. |
-| **Train a trading team** | A compact case study in selection bias and cost realism | Run the interactive quiz in `preview.html` as a workshop. |
+| **Train a trading team** | A compact case study in selection bias and cost realism | Run the [interactive quiz](https://m0-ar.github.io/trading-timeframe-study/preview.html) as a workshop. |
 | **Build a model-risk review** | Pre-registration, deviations log, holdout rule, and machine-readable artifacts | Reuse the protocol and artifact structure for an internal review. |
 | **Audit a backtest** | DSR, PBO, Reality Check, SPA, and Benjamini–Hochberg results | Ask for the same statistics before allocating capital. |
 | **Teach empirical finance** | A complete, reproducible worked example | Use the paper, figures, and quiz as course material. |
@@ -674,7 +676,7 @@ These are the claims you should **not** make from this repository:
 | **Publication figures** | Eight figures generated from the artifacts. |
 | **Automated tests** | 20 tests covering metrics, statistics, and pipeline behavior. |
 | **Docker and CI** | Reproducible environment and automated lint/test workflow. |
-| **Interactive preview** | A self-contained HTML page with an evidence explorer and a quiz. |
+| **Interactive preview** | A self-contained [HTML page](https://m0-ar.github.io/trading-timeframe-study/preview.html) with an evidence explorer and a quiz. |
 
 ---
 
@@ -900,7 +902,7 @@ Choose the slowest timeframe that still preserves the decisions you actually nee
 
 </details>
 
-For the full interactive quiz, open [`preview.html`](preview.html).
+For the full interactive quiz, open [`preview.html`](https://m0-ar.github.io/trading-timeframe-study/preview.html).
 
 ---
 
@@ -1004,6 +1006,6 @@ That is the difference between a backtest and evidence. That is the difference b
 
 **Built for people who want the truth before the trade.**
 
-[Read the technical paper](docs/PAPER.md) · [Open the interactive preview](preview.html) · [Review the evidence](results/report.json) · [Run the tests](tests)
+[Read the technical paper](docs/PAPER.md) · [Open the interactive preview](https://m0-ar.github.io/trading-timeframe-study/preview.html) · [Review the evidence](results/report.json) · [Run the tests](tests)
 
 </div>
