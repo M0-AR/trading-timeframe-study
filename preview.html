@@ -1,0 +1,1137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Timeframe Validity — The evidence behind the backtest</title>
+<meta name="description" content="A pre-registered, cost-aware study of 1,008 trading strategies across six timeframes. Explore the evidence, the failure modes, and a beginner-to-pro quiz.">
+<meta name="theme-color" content="#06101d">
+<meta property="og:title" content="Timeframe Is a Parameter, Not a Truth">
+<meta property="og:description" content="1,008 strategies. One untouched holdout. The best backtest lost money out of sample. Explore the evidence.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/social-preview.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306101d'/%3E%3Cpath d='M15 43V21h9v22zm13 0V13h9v30zm13 0V29h9v14z' fill='%23f3b968'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#06101d;
+  --bg-2:#081524;
+  --panel:rgba(13,29,48,.82);
+  --panel-2:rgba(17,38,61,.78);
+  --ink:#edf4fb;
+  --muted:#a3b5c8;
+  --faint:#71869c;
+  --line:rgba(173,199,225,.14);
+  --line-2:rgba(173,199,225,.28);
+  --amber:#f3b968;
+  --amber-2:#ffd79a;
+  --mint:#67e0b2;
+  --coral:#ff7d7d;
+  --blue:#8bbdff;
+  --violet:#c6a6ff;
+  --shadow:0 30px 90px rgba(0,0,0,.48);
+  --max:1180px;
+  --r:18px;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{
+  margin:0;
+  background:
+    radial-gradient(1200px 800px at 82% -10%, rgba(243,185,104,.10), transparent 60%),
+    radial-gradient(900px 700px at -8% 18%, rgba(103,224,178,.08), transparent 60%),
+    linear-gradient(180deg,var(--bg) 0%, #071322 42%, #06101d 100%);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:17px;
+  line-height:1.65;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background-image:
+    linear-gradient(rgba(173,199,225,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(173,199,225,.035) 1px, transparent 1px);
+  background-size:64px 64px;
+  mask-image:linear-gradient(180deg,rgba(0,0,0,.55),transparent 80%);
+  z-index:-1;
+}
+::selection{background:rgba(243,185,104,.28);color:#fff}
+a{color:var(--amber-2);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:#fff}
+img{max-width:100%;height:auto;display:block}
+button{font:inherit}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.03em;line-height:1.06;margin:0}
+h1{font-size:clamp(3.2rem,7.6vw,7rem);letter-spacing:-.055em}
+h2{font-size:clamp(2.2rem,4.6vw,4rem)}
+h3{font-size:clamp(1.25rem,2vw,1.6rem);letter-spacing:-.02em}
+p{margin:0 0 1.1em}
+code,pre{font-family:var(--mono)}
+.skip-link{position:absolute;left:16px;top:-80px;background:var(--amber);color:#111;padding:10px 14px;border-radius:8px;z-index:1000;font-weight:700}
+.skip-link:focus{top:16px}
+.wrap{width:min(calc(100% - 40px),var(--max));margin-inline:auto}
+.topbar{
+  position:sticky;top:0;z-index:80;
+  backdrop-filter:blur(18px) saturate(140%);
+  background:rgba(6,16,29,.78);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:18px;height:70px;width:min(calc(100% - 40px),var(--max));margin:auto}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink);text-decoration:none;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
+.brand-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--amber),#d78d2c);color:#15100a;font-size:.78rem;font-weight:900;letter-spacing:-.04em;box-shadow:0 6px 24px rgba(243,185,104,.22)}
+.nav{display:flex;gap:4px;align-items:center;overflow:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{color:var(--muted);text-decoration:none;font-size:.82rem;font-weight:600;padding:8px 10px;border-radius:8px;white-space:nowrap;transition:background .2s,color .2s}
+.nav a:hover,.nav a[aria-current="true"]{background:rgba(255,255,255,.055);color:var(--ink)}
+.top-actions{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid transparent;border-radius:999px;padding:13px 20px;font-size:.9rem;font-weight:700;letter-spacing:.01em;text-decoration:none;cursor:pointer;transition:transform .2s,background .2s,border-color .2s,color .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:var(--amber);color:#171006;box-shadow:0 12px 30px rgba(243,185,104,.18)}
+.btn-primary:hover{background:var(--amber-2);color:#171006}
+.btn-ghost{border-color:var(--line-2);color:var(--ink);background:rgba(255,255,255,.03)}
+.btn-ghost:hover{background:rgba(255,255,255,.075);border-color:rgba(255,255,255,.4)}
+.btn-small{padding:9px 14px;font-size:.78rem}
+.progress{height:2px;background:transparent}
+.progress span{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--amber),var(--mint));box-shadow:0 0 12px rgba(243,185,104,.55)}
+.hero{position:relative;padding:clamp(56px,9vw,120px) 0 44px;overflow:hidden}
+.hero::before{content:"";position:absolute;width:680px;height:680px;right:-220px;top:-180px;border-radius:50%;background:radial-gradient(circle,rgba(243,185,104,.13),transparent 64%);filter:blur(10px);pointer-events:none}
+.hero::after{content:"";position:absolute;width:560px;height:560px;left:-280px;bottom:-220px;border-radius:50%;background:radial-gradient(circle,rgba(103,224,178,.09),transparent 66%);pointer-events:none}
+.hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1.22fr) minmax(300px,.78fr);gap:clamp(32px,6vw,76px);align-items:center}
+.kicker{display:inline-flex;align-items:center;gap:10px;font-size:.7rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--amber);margin-bottom:22px}
+.kicker::before{content:"";width:30px;height:1px;background:var(--amber);opacity:.65}
+.hero h1{margin-bottom:24px}
+.hero h1 em{font-style:normal;color:var(--amber);text-shadow:0 0 60px rgba(243,185,104,.18)}
+.hero-sub{max-width:660px;font-size:clamp(1.02rem,1.45vw,1.2rem);color:var(--muted);line-height:1.7}
+.hero-sub strong{color:var(--ink);font-weight:600}
+.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.hero-note{margin-top:20px;font-size:.78rem;color:var(--faint)}
+.hero-card{position:relative;background:linear-gradient(160deg,rgba(19,42,67,.96),rgba(9,22,38,.96));border:1px solid var(--line-2);border-radius:24px;padding:24px;box-shadow:var(--shadow);overflow:hidden}
+.hero-card::before{content:"";position:absolute;inset:-40% -30% auto auto;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,125,125,.16),transparent 68%);pointer-events:none}
+.hero-card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;position:relative}
+.hero-card-head span:first-child{font-size:.66rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid rgba(255,125,125,.32);background:rgba(255,125,125,.09);color:#ffb3b3;border-radius:999px;padding:5px 9px;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.pill::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--coral);box-shadow:0 0 8px var(--coral)}
+.winner-line{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;position:relative}
+.winner-side{padding:16px 14px;border-radius:14px;background:rgba(255,255,255,.035);border:1px solid var(--line)}
+.winner-side small{display:block;font-size:.62rem;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);margin-bottom:4px}
+.winner-side b{display:block;font-family:var(--serif);font-size:2.15rem;line-height:1;letter-spacing:-.04em}
+.winner-side.good b{color:var(--mint)}
+.winner-side.bad b{color:var(--coral)}
+.winner-arrow{font-size:1.3rem;color:var(--faint)}
+.hero-card-foot{margin-top:18px;font-size:.77rem;color:var(--muted);line-height:1.55}
+.hero-card-foot strong{color:var(--ink)}
+.mini-stats{display:grid;gap:9px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.mini-stat{display:flex;justify-content:space-between;gap:16px;font-size:.78rem;color:var(--muted)}
+.mini-stat b{color:var(--ink);font-variant-numeric:tabular-nums;text-align:right}
+.scroll-cue{display:flex;align-items:center;gap:10px;margin-top:48px;color:var(--faint);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase}
+.scroll-cue span{display:block;width:42px;height:1px;background:linear-gradient(90deg,var(--amber),transparent)}
+.stat-strip{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:16px;overflow:hidden;background:rgba(10,23,39,.55);margin-top:40px}
+.stat-strip div{padding:20px 18px;border-right:1px solid var(--line)}
+.stat-strip div:last-child{border-right:0}
+.stat-strip b{display:block;font-family:var(--serif);font-size:clamp(1.35rem,2.4vw,2rem);letter-spacing:-.03em;line-height:1.1;margin-bottom:5px;color:var(--ink)}
+.stat-strip span{display:block;font-size:.67rem;line-height:1.4;color:var(--faint);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.section{padding:clamp(64px,9vw,112px) 0;position:relative}
+.section + .section{border-top:1px solid var(--line)}
+.section-head{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,5vw,64px);align-items:end;margin-bottom:40px}
+.section-kicker{font-size:.68rem;font-weight:800;letter-spacing:.17em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.section-head p{color:var(--muted);margin:0;font-size:1.02rem;max-width:620px}
+.section-head h2{max-width:620px}
+.answer-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.card{background:linear-gradient(180deg,rgba(16,35,57,.82),rgba(9,22,39,.92));border:1px solid var(--line);border-radius:var(--r);padding:26px;position:relative;overflow:hidden}
+.card:hover{border-color:var(--line-2)}
+.card .num{font-family:var(--mono);font-size:.68rem;color:var(--amber);letter-spacing:.1em;margin-bottom:16px}
+.card h3{margin-bottom:10px}
+.card p{margin:0;color:var(--muted);font-size:.93rem;line-height:1.65}
+.card strong{color:var(--ink)}
+.card .accent{color:var(--amber)}
+.card::after{content:"";position:absolute;right:-40px;top:-40px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(243,185,104,.08),transparent 68%);pointer-events:none}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:36px}
+.step{padding:24px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.022)}
+.step .step-num{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;border:1px solid rgba(243,185,104,.4);color:var(--amber);font-family:var(--mono);font-size:.75rem;margin-bottom:16px}
+.step h3{font-size:1.08rem;margin-bottom:7px}
+.step p{margin:0;color:var(--muted);font-size:.86rem;line-height:1.6}
+.band{padding:clamp(48px,7vw,84px) 0;background:linear-gradient(90deg,rgba(243,185,104,.08),rgba(103,224,178,.055),rgba(243,185,104,.08));border-top:1px solid rgba(243,185,104,.2);border-bottom:1px solid rgba(243,185,104,.2)}
+.band blockquote{max-width:920px;margin:0 auto;text-align:center;font-family:var(--serif);font-size:clamp(1.5rem,3.6vw,2.8rem);line-height:1.25;letter-spacing:-.035em}
+.band blockquote em{font-style:normal;color:var(--amber)}
+.band cite{display:block;margin-top:20px;text-align:center;color:var(--faint);font-family:var(--sans);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-style:normal;font-weight:800}
+.explorer{border:1px solid var(--line);border-radius:20px;background:rgba(8,20,35,.65);overflow:hidden}
+.explorer-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.explorer-head h3{font-size:1.05rem;letter-spacing:-.02em}
+.asset-buttons{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:7px 13px;font-size:.72rem;font-weight:800;letter-spacing:.04em;cursor:pointer}
+.chip:hover{color:var(--ink);border-color:var(--line-2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:#08111c;border-color:var(--ink)}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:620px}
+caption{text-align:left;padding:14px 20px 0;color:var(--faint);font-size:.72rem;letter-spacing:.02em}
+th,td{padding:12px 16px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{color:var(--faint);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;font-weight:800;background:rgba(255,255,255,.02)}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+tbody tr:last-child td{border-bottom:0}
+td b{color:var(--ink)}
+.num-pos{color:var(--mint)!important}
+.num-neg{color:var(--coral)!important}
+.num-amber{color:var(--amber)!important}
+.tabs{display:flex;gap:2px;overflow:auto;padding:0 12px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;background:transparent;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:16px 14px;font-size:.78rem;font-weight:800;letter-spacing:.02em;white-space:nowrap;cursor:pointer}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--amber);border-bottom-color:var(--amber)}
+.panel{padding:clamp(20px,3vw,32px)}
+.panel[hidden]{display:none}
+.panel:not([hidden]){animation:panelIn .32s ease both}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.panel-intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:28px;margin-bottom:26px}
+.panel-intro h3{font-size:clamp(1.35rem,2.3vw,1.9rem);margin-bottom:10px}
+.panel-intro p{color:var(--muted);font-size:.9rem;margin:0}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:26px}
+.metric{border:1px solid var(--line);border-radius:12px;padding:15px;background:rgba(255,255,255,.022)}
+.metric b{display:block;font-family:var(--serif);font-size:clamp(1.3rem,2.2vw,1.8rem);line-height:1.1;letter-spacing:-.03em;margin-bottom:5px}
+.metric span{font-size:.64rem;line-height:1.4;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.metric.bad b{color:var(--coral)}
+.metric.good b{color:var(--mint)}
+.metric.warn b{color:var(--amber)}
+.chart{display:grid;gap:10px;margin:8px 0 22px}
+.bar-row{display:grid;grid-template-columns:44px minmax(120px,1fr) 66px;align-items:center;gap:12px}
+.bar-label{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.bar-track{height:12px;background:rgba(255,255,255,.05);border-radius:99px;position:relative;overflow:hidden}
+.bar-zero{position:absolute;top:-3px;bottom:-3px;width:1px;background:rgba(255,255,255,.35);left:92.8%;z-index:2}
+.bar-fill{position:absolute;top:0;bottom:0;border-radius:99px}
+.bar-fill.coral{background:linear-gradient(90deg,rgba(255,125,125,.45),var(--coral))}
+.bar-fill.mint{background:linear-gradient(90deg,rgba(103,224,178,.4),var(--mint))}
+.bar-value{text-align:right;font-family:var(--mono);font-size:.72rem;font-variant-numeric:tabular-nums}
+.bar-value.neg{color:var(--coral)}
+.bar-value.pos{color:var(--mint)}
+.note{font-size:.72rem;color:var(--faint);line-height:1.55;margin:0}
+.diagnostic-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:start}
+.diag-list{display:grid;gap:8px}
+.diag{display:flex;justify-content:space-between;gap:18px;padding:12px 14px;border-bottom:1px solid var(--line);font-size:.82rem}
+.diag:last-child{border-bottom:0}
+.diag span{color:var(--muted)}
+.diag b{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.callout{border:1px solid rgba(243,185,104,.28);background:rgba(243,185,104,.055);border-radius:14px;padding:18px;margin-top:16px}
+.callout strong{color:var(--amber)}
+.callout p{margin:0;font-size:.84rem;color:var(--muted)}
+.overlay-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.overlay{border:1px solid var(--line);border-radius:14px;padding:18px;background:rgba(255,255,255,.022)}
+.overlay small{display:block;font-size:.63rem;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:800;margin-bottom:10px}
+.overlay b{display:block;font-family:var(--serif);font-size:2rem;letter-spacing:-.04em;line-height:1;color:var(--mint);margin-bottom:6px}
+.overlay span{font-size:.75rem;color:var(--muted)}
+.overlay .bar-mini{height:5px;border-radius:99px;background:rgba(255,255,255,.07);margin-top:14px;overflow:hidden}
+.overlay .bar-mini i{display:block;height:100%;background:linear-gradient(90deg,var(--mint),rgba(103,224,178,.45));border-radius:99px}
+.venues{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.venue{border:1px solid var(--line);border-radius:12px;padding:15px;background:rgba(255,255,255,.022)}
+.venue span{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:800;margin-bottom:5px}
+.venue b{font-family:var(--mono);font-size:1.05rem;letter-spacing:-.02em}
+.signal-row{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.signal{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 10px;font-size:.68rem;font-weight:800;letter-spacing:.03em;border:1px solid var(--line)}
+.signal.long{color:var(--mint);background:rgba(103,224,178,.08);border-color:rgba(103,224,178,.25)}
+.signal.short{color:var(--coral);background:rgba(255,125,125,.08);border-color:rgba(255,125,125,.25)}
+.signal.flat{color:var(--faint);background:rgba(255,255,255,.03)}
+.play-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.play{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02)}
+.play .n{font-family:var(--mono);font-size:.72rem;color:var(--amber);padding-top:3px}
+.play h3{font-size:1rem;margin-bottom:5px}
+.play p{margin:0;font-size:.83rem;color:var(--muted);line-height:1.55}
+.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px}
+.role{border:1px solid var(--line);border-radius:14px;padding:20px;background:linear-gradient(180deg,rgba(16,35,57,.65),rgba(9,22,39,.7))}
+.role h3{font-size:1rem;margin-bottom:9px}
+.role ul{margin:0;padding-left:18px;color:var(--muted);font-size:.82rem;line-height:1.6}
+.role li{margin-bottom:5px}
+.quiz-shell{display:grid;grid-template-columns:300px minmax(0,1fr);gap:26px;align-items:start}
+.quiz-aside{position:sticky;top:92px;border:1px solid var(--line);border-radius:18px;padding:22px;background:linear-gradient(180deg,rgba(16,35,57,.8),rgba(9,22,39,.8))}
+.quiz-aside h3{font-size:1.15rem;margin-bottom:8px}
+.quiz-aside p{font-size:.8rem;color:var(--muted);margin-bottom:18px}
+.quiz-progress{height:8px;border-radius:99px;background:rgba(255,255,255,.07);overflow:hidden;margin-bottom:10px}
+.quiz-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--amber),var(--mint));border-radius:99px;transition:width .25s}
+.quiz-progress-label{display:flex;justify-content:space-between;font-size:.66rem;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;font-weight:800}
+.quiz-aside .hint{font-size:.72rem;color:var(--faint);margin-top:18px;line-height:1.55}
+.quiz-form{display:grid;gap:12px}
+fieldset.q{border:1px solid var(--line);border-radius:16px;padding:20px;margin:0;background:rgba(255,255,255,.016);transition:border-color .25s,background .25s}
+fieldset.q legend{display:flex;gap:10px;align-items:flex-start;width:100%;padding:0 4px;font-weight:700;font-size:.96rem;line-height:1.45;color:var(--ink)}
+.q-num{flex:0 0 auto;display:inline-grid;place-items:center;min-width:26px;height:26px;border-radius:7px;background:rgba(243,185,104,.1);border:1px solid rgba(243,185,104,.28);color:var(--amber);font-family:var(--mono);font-size:.65rem;margin-right:9px}
+.q-level{display:inline-block;font-size:.58rem;text-transform:uppercase;letter-spacing:.1em;color:var(--faint);font-weight:800;margin-left:6px;vertical-align:2px}
+.options{display:grid;gap:8px;margin-top:16px}
+.options label{display:flex;gap:11px;align-items:flex-start;border:1px solid transparent;border-radius:10px;padding:10px 12px;cursor:pointer;font-size:.86rem;color:var(--muted);line-height:1.45;transition:background .2s,border-color .2s,color .2s}
+.options label:hover{background:rgba(255,255,255,.035);color:var(--ink)}
+.options input{margin:4px 0 0;accent-color:var(--amber);flex:0 0 auto}
+.options label:has(input:checked){background:rgba(243,185,104,.07);border-color:rgba(243,185,104,.32);color:var(--ink)}
+.q.correct{border-color:rgba(103,224,178,.42);background:rgba(103,224,178,.035)}
+.q.incorrect{border-color:rgba(255,125,125,.42);background:rgba(255,125,125,.035)}
+.explanation{display:none;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+.q.revealed .explanation{display:block}
+.explanation b{color:var(--ink)}
+.quiz-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:18px}
+.score-card{display:none;grid-template-columns:132px 1fr;gap:22px;align-items:center;border:1px solid rgba(243,185,104,.3);background:linear-gradient(135deg,rgba(243,185,104,.09),rgba(103,224,178,.06));border-radius:18px;padding:22px;margin-top:18px}
+.score-card.show{display:grid;animation:panelIn .4s ease both}
+.score-ring{width:132px;height:132px;border-radius:50%;background:conic-gradient(var(--mint) calc(var(--score,0)*1%),rgba(255,255,255,.08) 0);display:grid;place-items:center;position:relative}
+.score-ring::before{content:"";position:absolute;inset:9px;border-radius:50%;background:#0a192a}
+.score-ring b{position:relative;font-family:var(--serif);font-size:2.2rem;letter-spacing:-.04em}
+.score-copy h3{font-size:1.2rem;margin-bottom:4px}
+.score-copy p{margin:0;color:var(--muted);font-size:.83rem}
+.score-copy .rank{color:var(--amber);font-weight:800;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:7px}
+.repro-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:18px;align-items:start}
+.code-card{border:1px solid var(--line);border-radius:16px;background:#07111d;overflow:hidden}
+.code-card header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border-bottom:1px solid var(--line);font-size:.67rem;color:var(--faint);letter-spacing:.1em;text-transform:uppercase;font-weight:800}
+.code-card pre{margin:0;padding:18px;overflow:auto;font-size:.78rem;line-height:1.7;color:#cfe0f1}
+.copy{border:1px solid var(--line-2);background:transparent;color:var(--muted);border-radius:7px;padding:5px 9px;font-size:.64rem;font-weight:800;cursor:pointer}
+.copy:hover{color:var(--ink);border-color:var(--faint)}
+.artifact-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.artifact{border:1px solid var(--line);border-radius:10px;padding:12px;background:rgba(255,255,255,.022);font-size:.72rem}
+.artifact b{display:block;color:var(--ink);font-family:var(--mono);font-size:.7rem;margin-bottom:3px}
+.artifact span{color:var(--faint);line-height:1.4;display:block}
+.footer{border-top:1px solid var(--line);padding:44px 0 56px;background:rgba(4,11,20,.62)}
+.footer-grid{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;flex-wrap:wrap}
+.footer p{font-size:.78rem;color:var(--faint);max-width:520px;margin:0}
+.footer-links{display:flex;flex-wrap:wrap;gap:14px;font-size:.78rem}
+.footer-links a{color:var(--muted);text-decoration:none}
+.footer-links a:hover{color:var(--ink)}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .reveal{opacity:1;transform:none}
+}
+@media (max-width:980px){
+  .hero-grid,.section-head,.panel-intro,.diagnostic-grid,.repro-grid{grid-template-columns:1fr}
+  .hero-card{max-width:560px}
+  .stat-strip{grid-template-columns:repeat(3,1fr)}
+  .stat-strip div:nth-child(3){border-right:0}
+  .stat-strip div:nth-child(n+4){border-top:1px solid var(--line)}
+  .stat-strip div:nth-child(4){border-right:1px solid var(--line)}
+  .metrics{grid-template-columns:repeat(2,1fr)}
+  .role-grid{grid-template-columns:1fr}
+  .quiz-shell{grid-template-columns:1fr}
+  .quiz-aside{position:static}
+}
+@media (max-width:760px){
+  .topbar-inner{height:62px}
+  .nav{display:none}
+  .top-actions .btn span{display:none}
+  h1{font-size:clamp(2.9rem,12vw,4.5rem)}
+  .hero{padding-top:44px}
+  .answer-grid,.steps,.overlay-grid,.venues,.play-grid,.artifact-grid{grid-template-columns:1fr}
+  .stat-strip{grid-template-columns:1fr 1fr}
+  .stat-strip div{border-right:1px solid var(--line)!important;border-top:1px solid var(--line)}
+  .stat-strip div:nth-child(odd){border-right:1px solid var(--line)!important}
+  .stat-strip div:nth-child(even){border-right:0!important}
+  .stat-strip div:nth-child(-n+2){border-top:0}
+  .stat-strip b{font-size:1.5rem}
+  .section-head{margin-bottom:28px}
+  .panel{padding:18px}
+  .panel-intro{gap:12px}
+  .bar-row{grid-template-columns:36px minmax(80px,1fr) 58px;gap:8px}
+  .score-card{grid-template-columns:1fr;text-align:center}
+  .score-ring{margin:0 auto}
+  .footer-grid{display:block}
+  .footer-links{margin-top:18px}
+}
+@media (max-width:480px){
+  .wrap{width:min(calc(100% - 28px),var(--max))}
+  .hero-actions .btn{width:100%}
+  .metrics{grid-template-columns:1fr}
+  .winner-side b{font-size:1.65rem}
+  .winner-line{gap:6px}
+  .hero-card{padding:18px}
+}
+</style>
+</head>
+<body id="top">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top" aria-label="Timeframe Validity home">
+      <span class="brand-mark" aria-hidden="true">TF</span>
+      <span>Timeframe Validity</span>
+    </a>
+    <nav class="nav" aria-label="Primary">
+      <a href="#overview">Overview</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#playbook">Playbook</a>
+      <a href="#quiz">Quiz</a>
+      <a href="#reproduce">Reproduce</a>
+    </nav>
+    <div class="top-actions">
+      <a class="btn btn-ghost btn-small" href="docs/PAPER.md">Paper <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+  <div class="progress" aria-hidden="true"><span id="scrollProgress"></span></div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <div class="kicker">Pre-registered · Cost-aware · Reproducible</div>
+          <h1>Timeframe is a <em>parameter</em>, not a truth.</h1>
+          <p class="hero-sub">We tested <strong>1,008 strategies across six timeframes</strong>, charged realistic costs, and kept a 21-month holdout untouched. The best backtest looked exceptional. Then it lost money on data it had never seen.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#evidence">Explore the evidence <span aria-hidden="true">↓</span></a>
+            <a class="btn btn-ghost" href="#quiz">Take the 2-minute quiz</a>
+          </div>
+          <p class="hero-note">No finance background required. Start with the evidence, then test yourself.</p>
+        </div>
+        <aside class="hero-card" aria-label="Headline result">
+          <div class="hero-card-head">
+            <span>The winner</span>
+            <span class="pill">Failed out of sample</span>
+          </div>
+          <div class="winner-line">
+            <div class="winner-side good">
+              <small>In-sample Sharpe</small>
+              <b>1.54</b>
+            </div>
+            <span class="winner-arrow" aria-hidden="true">→</span>
+            <div class="winner-side bad">
+              <small>Holdout Sharpe</small>
+              <b>−0.50</b>
+            </div>
+          </div>
+          <p class="hero-card-foot">The top trial earned <strong>+139% annualized</strong> in development and <strong>−29% annualized</strong> on the untouched holdout. Selection is the binding constraint.</p>
+          <div class="mini-stats">
+            <div class="mini-stat"><span>Trials tested</span><b>1,008</b></div>
+            <div class="mini-stat"><span>Positive significant OOS</span><b>0 / 214</b></div>
+            <div class="mini-stat"><span>Probability of overfitting</span><b>15.6%</b></div>
+            <div class="mini-stat"><span>Median net Sharpe, 5m → 4h</span><b>−3.21 → +0.39</b></div>
+          </div>
+        </aside>
+      </div>
+      <div class="scroll-cue"><span></span> Scroll to the evidence</div>
+      <div class="stat-strip reveal" aria-label="Study at a glance">
+        <div><b>1,008</b><span>strategies tested</span></div>
+        <div><b>0 / 214</b><span>positive significant OOS</span></div>
+        <div><b>15.6%</b><span>probability of overfitting</span></div>
+        <div><b>80.1 pp</b><span>median 5m cost drag</span></div>
+        <div><b>12 bp</b><span>live venue gap</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="overview">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">The short version</div>
+          <h2>One study. Four uncomfortable answers.</h2>
+        </div>
+        <p>Most “best timeframe” claims compare backtests without costs, without a trial count, and without a final exam. This study adds all three. The result is less exciting and more useful.</p>
+      </div>
+      <div class="answer-grid">
+        <article class="card reveal">
+          <div class="num">01 / COSTS</div>
+          <h3>Costs decide the timeframe.</h3>
+          <p>The median 5-minute strategy had a <strong>positive gross Sharpe of +0.244</strong> and a <strong>negative net Sharpe of −3.207</strong>. The signal did not disappear. The toll did.</p>
+        </article>
+        <article class="card reveal">
+          <div class="num">02 / SELECTION</div>
+          <h3>The winner is a warning.</h3>
+          <p>The best trial reached <strong>1.54 in-sample Sharpe</strong> and then fell to <strong>−0.50 on the holdout</strong>. The top ten produced three positive holdouts. None had a confidence interval that excluded zero.</p>
+        </article>
+        <article class="card reveal">
+          <div class="num">03 / RISK</div>
+          <h3>Overlays are risk controls.</h3>
+          <p>Multi-timeframe filters and confluence improve average net Sharpe, but mostly by cutting volatility and turnover. Their <strong>gross alpha effect is small</strong>. Useful, but not magic.</p>
+        </article>
+        <article class="card reveal">
+          <div class="num">04 / OPERATIONS</div>
+          <h3>Your budget changes the answer.</h3>
+          <p>Bitcoin preferred daily bars at every budget. Ethereum and Solana shifted toward faster bars when more trades were allowed. The right timeframe is the <strong>slowest one your decisions can support</strong>.</p>
+        </article>
+      </div>
+
+      <div class="steps">
+        <article class="step reveal">
+          <div class="step-num">01</div>
+          <h3>Lock the protocol</h3>
+          <p>Pre-register the assets, timeframes, strategies, costs, hypotheses, and decision rule before opening the holdout.</p>
+        </article>
+        <article class="step reveal">
+          <div class="step-num">02</div>
+          <h3>Charge for reality</h3>
+          <p>Apply 12 bp per unit of turnover, execute at the next bar’s open, and report net Sharpe alongside gross Sharpe.</p>
+        </article>
+        <article class="step reveal">
+          <div class="step-num">03</div>
+          <h3>Open the exam once</h3>
+          <p>Evaluate 638 holdout days once. Count every trial. Deflate the winner. Report the losers and the limitations.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" aria-label="Central finding">
+    <blockquote>“A beautiful backtest is not evidence of an edge. It is a <em>hypothesis</em>.”</blockquote>
+    <cite>The central lesson of 1,008 trials</cite>
+  </section>
+
+  <section class="section" id="evidence">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">The evidence</div>
+          <h2>Without the marketing.</h2>
+        </div>
+        <p>Every number below comes from the committed artifacts in <code>results/</code>. If a sentence and an artifact disagree, the artifact wins.</p>
+      </div>
+
+      <div class="explorer reveal">
+        <div class="explorer-head">
+          <h3>Timeframe explorer</h3>
+          <div class="asset-buttons" role="group" aria-label="Choose crypto asset">
+            <button class="chip" type="button" data-asset="BTCUSDT" aria-pressed="true">Bitcoin</button>
+            <button class="chip" type="button" data-asset="ETHUSDT" aria-pressed="false">Ethereum</button>
+            <button class="chip" type="button" data-asset="SOLUSDT" aria-pressed="false">Solana</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table id="assetTable">
+            <caption id="assetCaption">In-sample and out-of-sample net Sharpe by timeframe, Bitcoin. Best in-sample trial per timeframe.</caption>
+            <thead>
+              <tr><th scope="col">Timeframe</th><th scope="col">Best IS net SR</th><th scope="col">Median IS net SR</th><th scope="col">Best OOS net SR</th><th scope="col">Best OOS annual return</th></tr>
+            </thead>
+            <tbody id="assetBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="explorer reveal" style="margin-top:18px">
+        <div class="tabs" role="tablist" aria-label="Evidence categories">
+          <button class="tab" role="tab" id="tab-costs" aria-controls="panel-costs" aria-selected="true">Costs</button>
+          <button class="tab" role="tab" id="tab-overfitting" aria-controls="panel-overfitting" aria-selected="false" tabindex="-1">Overfitting</button>
+          <button class="tab" role="tab" id="tab-overlays" aria-controls="panel-overlays" aria-selected="false" tabindex="-1">Overlays</button>
+          <button class="tab" role="tab" id="tab-budget" aria-controls="panel-budget" aria-selected="false" tabindex="-1">Budget</button>
+          <button class="tab" role="tab" id="tab-live" aria-controls="panel-live" aria-selected="false" tabindex="-1">Live</button>
+        </div>
+
+        <div class="panel" id="panel-costs" role="tabpanel" aria-labelledby="tab-costs">
+          <div class="panel-intro">
+            <h3>The cost cliff is the story.</h3>
+            <p>Gross Sharpe is broadly similar from 15 minutes to 4 hours. Net Sharpe is not. The difference is how many times you pay the toll.</p>
+          </div>
+          <div class="metrics">
+            <div class="metric bad"><b>−3.207</b><span>median 5m net Sharpe</span></div>
+            <div class="metric good"><b>+0.387</b><span>median 4h net Sharpe</span></div>
+            <div class="metric warn"><b>80.1 pp</b><span>median 5m annual cost drag</span></div>
+            <div class="metric"><b>7.2</b><span>median daily turnover / year</span></div>
+          </div>
+          <div class="chart" aria-label="Mean in-sample net Sharpe ratio by timeframe">
+            <div class="bar-row"><span class="bar-label">5m</span><div class="bar-track"><i class="bar-zero"></i><i class="bar-fill coral" style="left:0;width:92.9%"></i></div><span class="bar-value neg">−5.38</span></div>
+            <div class="bar-row"><span class="bar-label">15m</span><div class="bar-track"><i class="bar-zero"></i><i class="bar-fill coral" style="left:69.3%;width:23.5%"></i></div><span class="bar-value neg">−1.36</span></div>
+            <div class="bar-row"><span class="bar-label">30m</span><div class="bar-track"><i class="bar-zero"></i><i class="bar-fill coral" style="left:86.1%;width:6.8%"></i></div><span class="bar-value neg">−0.39</span></div>
+            <div class="bar-row"><span class="bar-label">1h</span><div class="bar-track"><i class="bar-zero"></i><i class="bar-fill mint" style="left:92.8%;width:1.7%"></i></div><span class="bar-value pos">+0.10</span></div>
+            <div class="bar-row"><span class="bar-label">4h</span><div class="bar-track"><i class="bar-zero"></i><i class="bar-fill mint" style="left:92.8%;width:7.2%"></i></div><span class="bar-value pos">+0.41</span></div>
+            <div class="bar-row"><span class="bar-label">1d</span><div class="bar-track"><i class="bar-zero"></i><i class="bar-fill mint" style="left:92.8%;width:6.7%"></i></div><span class="bar-value pos">+0.39</span></div>
+          </div>
+          <p class="note">Mean in-sample net Sharpe by timeframe. The chart is scaled around zero; the 5-minute bar consumes almost the entire negative side.</p>
+          <div class="callout"><p><strong>Read it carefully:</strong> 4h is the cost-optimal region, not a profitable guarantee. Every timeframe had a negative median holdout Sharpe. The least negative was 4h at −0.028.</p></div>
+        </div>
+
+        <div class="panel" id="panel-overfitting" role="tabpanel" aria-labelledby="tab-overfitting" hidden>
+          <div class="panel-intro">
+            <h3>The best result is the most dangerous one.</h3>
+            <p>Selecting the maximum of 1,008 noisy estimates is not the same as finding skill. Four diagnostics ask whether the winner is better than luck.</p>
+          </div>
+          <div class="metrics">
+            <div class="metric bad"><b>1.36e−91</b><span>max DSR across 1,008 trials</span></div>
+            <div class="metric warn"><b>15.6%</b><span>probability of backtest overfitting</span></div>
+            <div class="metric"><b>0.246</b><span>Reality Check p-value</span></div>
+            <div class="metric"><b>0.210</b><span>SPA p-value</span></div>
+          </div>
+          <div class="diagnostic-grid">
+            <div class="diag-list">
+              <div class="diag"><span>Best in-sample Sharpe</span><b class="num-pos">1.54</b></div>
+              <div class="diag"><span>Best holdout Sharpe</span><b class="num-neg">−0.50</b></div>
+              <div class="diag"><span>Winner’s DSR</span><b class="num-neg">8.16e−96</b></div>
+              <div class="diag"><span>Top-10 holdout winners</span><b>3 / 10</b></div>
+              <div class="diag"><span>Top-10 CIs excluding zero</span><b class="num-neg">0 / 10</b></div>
+              <div class="diag"><span>BH-significant IS</span><b>237</b></div>
+              <div class="diag"><span>…of which negative</span><b class="num-neg">232</b></div>
+              <div class="diag"><span>BH-significant OOS</span><b>214</b></div>
+              <div class="diag"><span>…of which negative</span><b class="num-neg">214</b></div>
+              <div class="diag"><span>Top-decile OOS mean Sharpe</span><b class="num-neg">−0.191</b></div>
+              <div class="diag"><span>Top-decile positive fraction</span><b class="num-amber">30.7%</b></div>
+            </div>
+            <div>
+              <div class="callout" style="margin-top:0">
+                <p><strong>The winner’s confidence interval:</strong> the best trial’s OOS Sharpe was −0.498, with a 95% interval of [−2.094, 0.727]. The range comfortably includes “no edge.”</p>
+              </div>
+              <div class="callout">
+                <p><strong>The rank-correlation trap:</strong> across all trials, IS and OOS Sharpe correlate at 0.709. Among in-sample winners, the correlation is −0.030. The overall number is driven by obviously bad strategies, not by skill among the contenders.</p>
+              </div>
+              <div class="callout">
+                <p><strong>What this does not mean:</strong> a 15.6% PBO is not a clean bill of health. It is a warning that the winner is still a hypothesis.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-overlays" role="tabpanel" aria-labelledby="tab-overlays" hidden>
+          <div class="panel-intro">
+            <h3>Useful risk controls. Not alpha machines.</h3>
+            <p>The overlays improved average net Sharpe and survived on the holdout on average. The mechanism is lower volatility and lower turnover, not a large new gross return.</p>
+          </div>
+          <div class="overlay-grid">
+            <div class="overlay"><small>HTF filter</small><b>+0.527</b><span>mean Δ net Sharpe · 80.6% positive</span><div class="bar-mini"><i style="width:32%"></i></div></div>
+            <div class="overlay"><small>HTF trigger</small><b>+1.634</b><span>mean Δ net Sharpe · 80.2% positive</span><div class="bar-mini"><i style="width:100%"></i></div></div>
+            <div class="overlay"><small>Confluence3</small><b>+0.936</b><span>mean Δ net Sharpe · 83.7% positive</span><div class="bar-mini"><i style="width:57%"></i></div></div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <caption>In-sample and out-of-sample overlay effects, all crypto trials.</caption>
+              <thead><tr><th scope="col">Variant</th><th scope="col">Mean Δ net IS</th><th scope="col">Mean Δ gross</th><th scope="col">Vol ratio</th><th scope="col">Turnover ratio</th><th scope="col">Mean Δ net OOS</th><th scope="col">OOS % positive</th></tr></thead>
+              <tbody>
+                <tr><td>HTF filter</td><td class="num-pos">+0.527</td><td>+0.066</td><td>0.803</td><td>0.620</td><td class="num-pos">+0.487</td><td>68.3%</td></tr>
+                <tr><td>HTF trigger</td><td class="num-pos">+1.634</td><td>+0.027</td><td>0.959</td><td>0.235</td><td class="num-pos">+1.782</td><td>73.0%</td></tr>
+                <tr><td>Confluence3</td><td class="num-pos">+0.936</td><td>+0.127</td><td>0.680</td><td>0.432</td><td class="num-pos">+0.812</td><td>69.1%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="note" style="margin-top:14px">A volatility ratio below 1 means the overlay reduced risk. A turnover ratio below 1 means it traded less. Both are useful. Neither is proof of alpha.</p>
+        </div>
+
+        <div class="panel" id="panel-budget" role="tabpanel" aria-labelledby="tab-budget" hidden>
+          <div class="panel-intro">
+            <h3>There is no best timeframe without a budget.</h3>
+            <p>The decision-budget test asks which timeframe is best given a cap on trades per week. The optimum changes for Ethereum and Solana. Bitcoin stays daily.</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <caption>Best feasible timeframe by allowed trades per week.</caption>
+              <thead><tr><th scope="col">Asset</th><th scope="col">Unconstrained</th><th scope="col">21 / week</th><th scope="col">42 / week</th><th scope="col">168 / week</th><th scope="col">336+ / week</th></tr></thead>
+              <tbody>
+                <tr><td>BTC</td><td><b>1d</b></td><td><b>1d</b></td><td><b>1d</b></td><td><b>1d</b></td><td><b>1d</b></td></tr>
+                <tr><td>ETH</td><td><b>30m</b></td><td>1d <span class="num-amber">(0.095 regret)</span></td><td>4h <span class="num-amber">(0.039 regret)</span></td><td>4h <span class="num-amber">(0.039 regret)</span></td><td><b>30m</b> <span class="num-pos">(0 regret)</span></td></tr>
+                <tr><td>SOL</td><td><b>4h</b></td><td>1d <span class="num-amber">(0.167 regret)</span></td><td><b>4h</b> <span class="num-pos">(0 regret)</span></td><td><b>4h</b> <span class="num-pos">(0 regret)</span></td><td><b>4h</b> <span class="num-pos">(0 regret)</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout"><p><strong>The practical rule:</strong> choose the slowest timeframe that still preserves the decisions you actually need. A full-time job, a large position, and a small account all imply different budgets.</p></div>
+        </div>
+
+        <div class="panel" id="panel-live" role="tabpanel" aria-labelledby="tab-live" hidden>
+          <div class="panel-intro">
+            <h3>The plumbing works. The signal disagrees.</h3>
+            <p>A live check compared three public venues and recorded a hash-chained snapshot. The venues were close. The 1-hour, 4-hour, and daily signals were not aligned.</p>
+          </div>
+          <div class="venues">
+            <div class="venue"><span>Kraken</span><b>83,253.00</b></div>
+            <div class="venue"><span>Coinbase</span><b>83,249.47</b></div>
+            <div class="venue"><span>OKX</span><b>83,349.40</b></div>
+          </div>
+          <div class="metrics">
+            <div class="metric good"><b>12.0 bp</b><span>maximum venue gap</span></div>
+            <div class="metric good"><b>3 / 3</b><span>hash-chain records valid</span></div>
+            <div class="metric warn"><b>No</b><span>timeframes aligned</span></div>
+            <div class="metric"><b>2</b><span>distinct signal signs</span></div>
+          </div>
+          <div class="signal-row" aria-label="Live signals">
+            <span class="signal long">1h MA +1</span>
+            <span class="signal long">1h TSMOM +1</span>
+            <span class="signal short">4h MA −1</span>
+            <span class="signal long">4h TSMOM +1</span>
+            <span class="signal long">1d MA +1</span>
+            <span class="signal long">1d TSMOM +1</span>
+          </div>
+          <p class="note">Snapshot: 2026-10-21T10:36:04Z. Tolerance: 50 bp. This is a read-only plumbing demonstration, not a trading system. Three records cannot establish whether the disagreement is informative.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="playbook">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">The playbook</div>
+          <h2>What to do Monday morning.</h2>
+        </div>
+        <p>You do not need to reproduce the study to use its discipline. Ask better questions, charge real costs, and reserve a final exam.</p>
+      </div>
+      <div class="play-grid">
+        <article class="play reveal"><div class="n">01</div><div><h3>Start with the budget.</h3><p>How many decisions can you genuinely make and execute per week? Choose the slowest timeframe that preserves them.</p></div></article>
+        <article class="play reveal"><div class="n">02</div><div><h3>Count the trials.</h3><p>A winner from one test and a winner from 1,008 tests are different claims. The trial count belongs in the result.</p></div></article>
+        <article class="play reveal"><div class="n">03</div><div><h3>Charge costs at the decision bar.</h3><p>Be conservative about execution. A gross Sharpe is a marketing number; a net Sharpe is an operating number.</p></div></article>
+        <article class="play reveal"><div class="n">04</div><div><h3>Write the protocol first.</h3><p>Lock assets, timeframes, variants, costs, and the decision rule before you look at the holdout.</p></div></article>
+        <article class="play reveal"><div class="n">05</div><div><h3>Open the exam once.</h3><p>No peeking, no re-tuning, no “one more variant.” The holdout is only useful if it stays untouched.</p></div></article>
+        <article class="play reveal"><div class="n">06</div><div><h3>Prefer risk controls to clever filters.</h3><p>Lower volatility and turnover are more robust than another signal. Treat overlays as seatbelts, not engines.</p></div></article>
+      </div>
+      <div class="role-grid">
+        <article class="role reveal">
+          <h3>If you allocate capital</h3>
+          <ul>
+            <li>Demand net returns and turnover.</li>
+            <li>Ask for the trial count and a deflation adjustment.</li>
+            <li>Ask what happened on the holdout.</li>
+            <li>Ask what would prove the thesis wrong.</li>
+          </ul>
+        </article>
+        <article class="role reveal">
+          <h3>If you build strategies</h3>
+          <ul>
+            <li>Pre-register before the holdout.</li>
+            <li>Report the distribution, not just the winner.</li>
+            <li>Test at two or three times your assumed cost.</li>
+            <li>Treat a large-grid winner as a hypothesis.</li>
+          </ul>
+        </article>
+        <article class="role reveal">
+          <h3>If you sell a strategy</h3>
+          <ul>
+            <li>Show the losers and the trial count.</li>
+            <li>Show drawdowns and capacity limits.</li>
+            <li>Explain the decision budget.</li>
+            <li>Publish the limitations. Trust is built there.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="quiz">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">The quiz</div>
+          <h2>From beginner to professional.</h2>
+        </div>
+        <p>Ten questions. No jargon required at the start; the last few are for practitioners. Every answer comes with an explanation.</p>
+      </div>
+      <div class="quiz-shell">
+        <aside class="quiz-aside reveal">
+          <h3>Your progress</h3>
+          <p>Answer all ten, then score yourself. You can retry as many times as you like.</p>
+          <div class="quiz-progress" aria-hidden="true"><i id="quizProgressBar"></i></div>
+          <div class="quiz-progress-label"><span>Answered</span><span id="quizProgressText">0 / 10</span></div>
+          <p class="hint">Levels: beginner (1–3), intermediate (4–6), advanced (7–9), professional (10).</p>
+        </aside>
+        <div>
+          <form id="quizForm" novalidate>
+            <div class="quiz-form">
+              <fieldset class="q" data-answer="b" data-explain="A 5-minute timeframe gives the strategy a new decision every five minutes. It does not mean the strategy must trade every five minutes.">
+                <legend><span class="q-num">01</span><span>What does a 5-minute timeframe mean?<span class="q-level">Beginner</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q1" value="a"> The strategy must hold for exactly five minutes.</label>
+                  <label><input type="radio" name="q1" value="b"> The strategy gets a new decision every five minutes.</label>
+                  <label><input type="radio" name="q1" value="c"> The strategy is five times safer than a daily strategy.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> timeframe is the decision interval, not a holding-period guarantee. The strategy may hold for many bars or none.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="c" data-explain="Costs, slippage, and turnover are the usual reason a positive gross backtest becomes a negative net strategy.">
+                <legend><span class="q-num">02</span><span>A strategy has gross Sharpe +0.6 and net Sharpe −0.8. What is the most likely explanation?<span class="q-level">Beginner</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q2" value="a"> The volatility is too low.</label>
+                  <label><input type="radio" name="q2" value="b"> The sample is too long.</label>
+                  <label><input type="radio" name="q2" value="c"> Trading costs and turnover consumed the edge.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> the gross-to-net gap is the cost channel. At high frequency, it can be larger than the signal itself.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="a" data-explain="Per-bar volatility rises with the square root of the horizon, but annualized volatility is approximately flat. Higher timeframes do not remove risk in annualized terms.">
+                <legend><span class="q-num">03</span><span>Across timeframes, annualized volatility is roughly…<span class="q-level">Beginner</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q3" value="a"> Flat.</label>
+                  <label><input type="radio" name="q3" value="b"> Falling by half each time the timeframe doubles.</label>
+                  <label><input type="radio" name="q3" value="c"> Rising by exactly the square root of the timeframe.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> the square-root-of-time scaling applies to per-bar volatility, not annualized volatility. The annualization cancels it.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="b" data-explain="PBO estimates the chance that the best in-sample strategy underperforms the median strategy out of sample.">
+                <legend><span class="q-num">04</span><span>What does the Probability of Backtest Overfitting estimate?<span class="q-level">Intermediate</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q4" value="a"> The chance that the backtest has a coding bug.</label>
+                  <label><input type="radio" name="q4" value="b"> The chance that the best in-sample strategy underperforms the median out of sample.</label>
+                  <label><input type="radio" name="q4" value="c"> The chance that the asset will fall next year.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> PBO is a selection diagnostic. It asks whether the winner is likely to be a winner after the selection process is accounted for.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="c" data-explain="The collapse from 1.54 in-sample to −0.50 out of sample is consistent with selection and overfitting. It is not proof that the strategy would have worked with different costs.">
+                <legend><span class="q-num">05</span><span>The best trial had IS Sharpe 1.54 and OOS Sharpe −0.50. What is the best interpretation?<span class="q-level">Intermediate</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q5" value="a"> The strategy is proven and the holdout was unlucky.</label>
+                  <label><input type="radio" name="q5" value="b"> The holdout must contain a data error.</label>
+                  <label><input type="radio" name="q5" value="c"> The winner is consistent with selection bias, not a durable edge.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> a single holdout can be unlucky, but the full pattern — 1,008 trials, a collapsed winner, and weak deflation diagnostics — points to selection rather than a proven edge.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="a" data-explain="The interval includes zero. A point estimate of +0.40 is not evidence of a positive edge when the plausible range runs from −0.80 to +1.46.">
+                <legend><span class="q-num">06</span><span>A holdout Sharpe is +0.40 with a 95% confidence interval of [−0.80, 1.46]. What can you conclude?<span class="q-level">Intermediate</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q6" value="a"> The result is consistent with no edge; the interval includes zero.</label>
+                  <label><input type="radio" name="q6" value="b"> The strategy is definitely profitable because the point estimate is positive.</label>
+                  <label><input type="radio" name="q6" value="c"> The strategy is definitely unprofitable because the interval is wide.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> the confidence interval is the range of plausible values. A range that includes zero cannot support a confident positive claim.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="b" data-explain="The overall correlation is dominated by obviously bad strategies. Among in-sample winners, the rank correlation is −0.030, so the ranking tells you almost nothing about future winners.">
+                <legend><span class="q-num">07</span><span>Overall IS/OOS rank correlation is 0.709, but among IS winners it is −0.030. Why?<span class="q-level">Advanced</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q7" value="a"> The overall correlation is a calculation error.</label>
+                  <label><input type="radio" name="q7" value="b"> Bad strategies stay bad; among good-looking strategies, rank is not predictive.</label>
+                  <label><input type="radio" name="q7" value="c"> The holdout is too short to compute a correlation.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> the full sample contains many clearly negative strategies that remain negative. That inflates the overall rank correlation without implying that the top of the distribution is predictable.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="c" data-explain="The overlays improve net Sharpe mainly by reducing volatility and turnover. The gross effect is small: +0.066 for the HTF filter, +0.027 for the trigger, and +0.127 for confluence.">
+                <legend><span class="q-num">08</span><span>Why do multi-timeframe overlays improve average net Sharpe?<span class="q-level">Advanced</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q8" value="a"> They predict the future better than the base signal.</label>
+                  <label><input type="radio" name="q8" value="b"> They increase leverage at the right moments.</label>
+                  <label><input type="radio" name="q8" value="c"> They mostly reduce volatility and turnover; gross alpha barely changes.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> the denominator effect is the main story. Lower risk and lower trading costs make the net ratio look better without creating much new gross return.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="a" data-explain="The best timeframe depends on the number of decisions you can make and execute. Choose the slowest timeframe that preserves the required decisions.">
+                <legend><span class="q-num">09</span><span>What does the decision-budget result imply?<span class="q-level">Advanced</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q9" value="a"> The best timeframe depends on how many decisions you can actually make.</label>
+                  <label><input type="radio" name="q9" value="b"> Daily is always best for every asset and every trader.</label>
+                  <label><input type="radio" name="q9" value="c"> Faster is always better if the backtest Sharpe is higher.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> Bitcoin stayed daily, but Ethereum and Solana shifted with the budget. There is no universal best timeframe without an operating constraint.</div>
+              </fieldset>
+
+              <fieldset class="q" data-answer="b" data-explain="A large-grid winner should be treated as a hypothesis. The next step is an untouched holdout plus a multiple-testing correction and realistic costs, not a launch.">
+                <legend><span class="q-num">10</span><span>You find a great result after testing 1,000 variants. What should you do before funding it?<span class="q-level">Professional</span></span></legend>
+                <div class="options">
+                  <label><input type="radio" name="q10" value="a"> Increase position size to make the most of the discovery.</label>
+                  <label><input type="radio" name="q10" value="b"> Treat it as a hypothesis: test on untouched data with costs and a trial-count correction.</label>
+                  <label><input type="radio" name="q10" value="c"> Ignore the other 999 variants because only the winner matters.</label>
+                </div>
+                <div class="explanation"><b>Why:</b> the winner is conditional on the search. The correct next step is out-of-sample confirmation with realistic costs and a multiple-testing adjustment.</div>
+              </fieldset>
+            </div>
+
+            <div class="quiz-actions">
+              <button class="btn btn-primary" type="submit">Score my answers</button>
+              <button class="btn btn-ghost" type="button" id="quizReset">Reset quiz</button>
+            </div>
+          </form>
+          <div class="score-card" id="scoreCard" aria-live="polite">
+            <div class="score-ring" id="scoreRing"><b id="scoreValue">0</b></div>
+            <div class="score-copy">
+              <span class="rank" id="scoreRank">Result</span>
+              <h3 id="scoreTitle">Your result</h3>
+              <p id="scoreText">Answer all ten questions to see your score.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="reproduce">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <div class="section-kicker">Reproduce</div>
+          <h2>Do not trust the summary. Run it.</h2>
+        </div>
+        <p>The tests are fast. The full pipeline is heavier. Both are documented, versioned, and backed by machine-readable artifacts.</p>
+      </div>
+      <div class="repro-grid">
+        <div style="display:grid;gap:12px">
+          <div class="code-card">
+            <header><span>Tests and lint</span><button class="copy" type="button" data-copy="python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -e &quot;.[dev]&quot;
+pytest -q
+ruff check src experiments tests">Copy</button></header>
+            <pre><code>python3.12 -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pytest -q
+ruff check src experiments tests</code></pre>
+          </div>
+          <div class="code-card">
+            <header><span>Full study</span><button class="copy" type="button" data-copy="source .venv/bin/activate
+make all">Copy</button></header>
+            <pre><code>source .venv/bin/activate
+make all</code></pre>
+          </div>
+          <div class="code-card">
+            <header><span>Open this page locally</span><button class="copy" type="button" data-copy="python3 -m http.server 8000
+# open http://localhost:8000/preview.html">Copy</button></header>
+            <pre><code>python3 -m http.server 8000
+# open http://localhost:8000/preview.html</code></pre>
+          </div>
+        </div>
+        <div>
+          <div class="artifact-grid">
+            <div class="artifact"><b>results/report.json</b><span>Top-level machine-readable report.</span></div>
+            <div class="artifact"><b>results/stats.json</b><span>DSR, PBO, RC, SPA, BH, effects, CIs.</span></div>
+            <div class="artifact"><b>results/trials_with_dsr.csv</b><span>All 1,008 trials with IS/OOS metrics.</span></div>
+            <div class="artifact"><b>results/top_bootstrap_ci.csv</b><span>Top-10 IS trials with OOS intervals.</span></div>
+            <div class="artifact"><b>results/timeframe_family.csv</b><span>Best and median performance by timeframe.</span></div>
+            <div class="artifact"><b>results/equity_effects.json</b><span>Equity overlay effects.</span></div>
+            <div class="artifact"><b>docs/PAPER.md</b><span>Full technical paper and methods.</span></div>
+            <div class="artifact"><b>docs/DEVIATIONS.md</b><span>Append-only deviation log.</span></div>
+          </div>
+          <div class="callout" style="margin-top:14px"><p><strong>Artifact-first rule:</strong> if a sentence in the README and a value in <code>results/</code> disagree, fix the sentence. The artifacts are authoritative.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-grid">
+    <div>
+      <a class="brand" href="#top" style="margin-bottom:12px"><span class="brand-mark" aria-hidden="true">TF</span><span>Timeframe Validity</span></a>
+      <p>Research and education, not financial advice. MIT licensed. Built with a pre-registered protocol, a fixed seed, and an untouched holdout.</p>
+    </div>
+    <div class="footer-links" aria-label="Footer links">
+      <a href="README.md">README</a>
+      <a href="docs/PAPER.md">Technical paper</a>
+      <a href="results/report.json">Machine-readable report</a>
+      <a href="LICENSE">License</a>
+      <a href="CITATION.cff">Citation</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  var data = {
+    BTCUSDT: [
+      {tf:"5m", is:-0.648431, med:-4.400162, oos:-1.337035, ann:-0.535758},
+      {tf:"15m", is:0.249085, med:-1.090980, oos:-0.534936, ann:-0.297378},
+      {tf:"30m", is:0.384435, med:-0.555256, oos:-0.314362, ann:-0.150492},
+      {tf:"1h", is:0.821406, med:-0.161742, oos:0.473772, ann:0.118280},
+      {tf:"4h", is:0.860834, med:0.286010, oos:0.426180, ann:0.095571},
+      {tf:"1d", is:0.907212, med:0.372043, oos:0.038440, ann:-0.061762}
+    ],
+    ETHUSDT: [
+      {tf:"5m", is:-0.339608, med:-3.082140, oos:-0.594708, ann:-0.486012},
+      {tf:"15m", is:0.251630, med:-0.616575, oos:-0.758427, ann:-0.544823},
+      {tf:"30m", is:0.587879, med:-0.211413, oos:0.230398, ann:-0.075171},
+      {tf:"1h", is:0.515718, med:-0.031797, oos:-0.076352, ann:-0.251255},
+      {tf:"4h", is:0.548706, med:0.197716, oos:-0.077072, ann:-0.258419},
+      {tf:"1d", is:0.492581, med:0.063274, oos:-0.112561, ann:-0.278526}
+    ],
+    SOLUSDT: [
+      {tf:"5m", is:0.434846, med:-1.974620, oos:-1.053414, ann:-0.672756},
+      {tf:"15m", is:1.306905, med:0.083363, oos:-0.077655, ann:-0.196707},
+      {tf:"30m", is:1.216163, med:0.526844, oos:-0.042139, ann:-0.186776},
+      {tf:"1h", is:1.484650, med:0.871612, oos:0.092437, ann:-0.070903},
+      {tf:"4h", is:1.541613, med:0.932549, oos:-0.497902, ann:-0.290466},
+      {tf:"1d", is:1.374309, med:0.740311, oos:-0.441039, ann:-0.396135}
+    ]
+  };
+
+  var assetNames = {BTCUSDT:"Bitcoin", ETHUSDT:"Ethereum", SOLUSDT:"Solana"};
+  var assetBody = document.getElementById("assetBody");
+  var assetCaption = document.getElementById("assetCaption");
+  var assetButtons = Array.prototype.slice.call(document.querySelectorAll("[data-asset]"));
+
+  function fmt(value, digits){
+    if (value === null || value === undefined) return "—";
+    var n = Number(value);
+    var s = n.toFixed(digits === undefined ? 3 : digits);
+    return (n > 0 ? "+" : "") + s;
+  }
+  function cls(value){
+    if (value === null) return "";
+    return value > 0 ? "num-pos" : value < 0 ? "num-neg" : "";
+  }
+  function renderAsset(symbol){
+    var rows = data[symbol] || [];
+    assetBody.innerHTML = rows.map(function(r){
+      var best = r.is === null ? "—" : fmt(r.is, 3);
+      return "<tr><td><b>" + r.tf + "</b></td>" +
+        "<td class=\"" + (r.is === null ? "" : cls(r.is)) + "\">" + best + "</td>" +
+        "<td class=\"" + cls(r.med) + "\">" + fmt(r.med, 3) + "</td>" +
+        "<td class=\"" + cls(r.oos) + "\">" + fmt(r.oos, 3) + "</td>" +
+        "<td class=\"" + cls(r.ann) + "\">" + fmt(r.ann * 100, 1) + "%</td></tr>";
+    }).join("");
+    assetCaption.textContent = "In-sample and out-of-sample net Sharpe by timeframe, " + assetNames[symbol] + ". Best in-sample trial per timeframe.";
+    assetButtons.forEach(function(btn){
+      btn.setAttribute("aria-pressed", btn.getAttribute("data-asset") === symbol ? "true" : "false");
+    });
+  }
+  assetButtons.forEach(function(btn){
+    btn.addEventListener("click", function(){ renderAsset(btn.getAttribute("data-asset")); });
+  });
+  renderAsset("BTCUSDT");
+
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function selectTab(tab){
+    tabs.forEach(function(t){
+      var selected = t === tab;
+      t.setAttribute("aria-selected", selected ? "true" : "false");
+      t.tabIndex = selected ? 0 : -1;
+      var panel = document.getElementById(t.getAttribute("aria-controls"));
+      if (panel) panel.hidden = !selected;
+    });
+  }
+  tabs.forEach(function(tab, index){
+    tab.addEventListener("click", function(){ selectTab(tab); });
+    tab.addEventListener("keydown", function(event){
+      var next = null;
+      if (event.key === "ArrowRight") next = tabs[(index + 1) % tabs.length];
+      if (event.key === "ArrowLeft") next = tabs[(index - 1 + tabs.length) % tabs.length];
+      if (event.key === "Home") next = tabs[0];
+      if (event.key === "End") next = tabs[tabs.length - 1];
+      if (next){ event.preventDefault(); next.focus(); selectTab(next); }
+    });
+  });
+
+  var form = document.getElementById("quizForm");
+  var questions = Array.prototype.slice.call(document.querySelectorAll("fieldset.q"));
+  var bar = document.getElementById("quizProgressBar");
+  var progressText = document.getElementById("quizProgressText");
+  var scoreCard = document.getElementById("scoreCard");
+  var scoreRing = document.getElementById("scoreRing");
+  var scoreValue = document.getElementById("scoreValue");
+  var scoreRank = document.getElementById("scoreRank");
+  var scoreTitle = document.getElementById("scoreTitle");
+  var scoreText = document.getElementById("scoreText");
+
+  function answeredCount(){
+    return questions.filter(function(q){
+      return q.querySelector('input[type="radio"]:checked') !== null;
+    }).length;
+  }
+  function updateProgress(){
+    var n = answeredCount();
+    bar.style.width = (n / questions.length * 100) + "%";
+    progressText.textContent = n + " / " + questions.length;
+  }
+  form.addEventListener("change", updateProgress);
+  updateProgress();
+
+  form.addEventListener("submit", function(event){
+    event.preventDefault();
+    var score = 0;
+    var unanswered = 0;
+    questions.forEach(function(q){
+      var correct = q.getAttribute("data-answer");
+      var chosen = q.querySelector('input[type="radio"]:checked');
+      q.classList.remove("correct", "incorrect");
+      q.classList.add("revealed");
+      if (!chosen){ unanswered += 1; q.classList.add("incorrect"); return; }
+      if (chosen.value === correct){ score += 1; q.classList.add("correct"); }
+      else { q.classList.add("incorrect"); }
+    });
+    var pct = Math.round(score / questions.length * 100);
+    scoreValue.textContent = score;
+    scoreRing.style.setProperty("--score", pct);
+    scoreRing.setAttribute("aria-label", score + " out of " + questions.length);
+    var rank, title, text;
+    if (score <= 4){
+      rank = "Curious beginner";
+      title = "You have the right instincts.";
+      text = "Read the beginner guide, then look at the cost and overfitting panels. The key idea: a backtest is a hypothesis, not a discovery.";
+    } else if (score <= 7){
+      rank = "Risk-aware analyst";
+      title = "You can spot the traps.";
+      text = "You understand costs, selection, and holdouts. The next step is the playbook and the technical paper, especially the multiple-testing section.";
+    } else if (score <= 9){
+      rank = "Quantitative thinker";
+      title = "You are ready for the paper.";
+      text = "Strong result. Read the pre-registration, the deviations log, and the top-10 confidence intervals. Then try the full reproduction.";
+    } else {
+      rank = "Timeframe professional";
+      title = "You can teach this.";
+      text = "You understand the full chain from costs to selection to out-of-sample decay. The next step is to apply the protocol to a new asset before peeking at the holdout.";
+    }
+    if (unanswered > 0) text += " You left " + unanswered + " question" + (unanswered === 1 ? "" : "s") + " blank; they were marked incorrect.";
+    scoreRank.textContent = rank;
+    scoreTitle.textContent = title;
+    scoreText.textContent = text;
+    scoreCard.classList.add("show");
+    scoreCard.scrollIntoView({behavior: "smooth", block: "nearest"});
+  });
+
+  document.getElementById("quizReset").addEventListener("click", function(){
+    form.reset();
+    questions.forEach(function(q){ q.classList.remove("correct", "incorrect", "revealed"); });
+    scoreCard.classList.remove("show");
+    updateProgress();
+    document.getElementById("quizForm").scrollIntoView({behavior: "smooth", block: "start"});
+  });
+
+  var copyButtons = Array.prototype.slice.call(document.querySelectorAll("[data-copy]"));
+  copyButtons.forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var text = btn.getAttribute("data-copy");
+      var done = function(){
+        var old = btn.textContent;
+        btn.textContent = "Copied";
+        window.setTimeout(function(){ btn.textContent = old; }, 1400);
+      };
+      if (navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(text).then(done).catch(function(){ fallbackCopy(text, done); });
+      } else {
+        fallbackCopy(text, done);
+      }
+    });
+  });
+  function fallbackCopy(text, done){
+    var area = document.createElement("textarea");
+    area.value = text;
+    area.setAttribute("readonly", "");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    try { document.execCommand("copy"); done(); } catch (e) {}
+    document.body.removeChild(area);
+  }
+
+  var progress = document.getElementById("scrollProgress");
+  var topbarLinks = Array.prototype.slice.call(document.querySelectorAll(".nav a"));
+  var sections = topbarLinks.map(function(link){
+    var id = link.getAttribute("href").slice(1);
+    return {link: link, section: document.getElementById(id)};
+  }).filter(function(item){ return item.section; });
+
+  function onScroll(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = max > 0 ? Math.min(100, Math.max(0, window.scrollY / max * 100)) : 0;
+    progress.style.width = pct + "%";
+    var current = null;
+    sections.forEach(function(item){
+      var rect = item.section.getBoundingClientRect();
+      if (rect.top <= 140 && rect.bottom > 140) current = item;
+    });
+    topbarLinks.forEach(function(link){ link.removeAttribute("aria-current"); });
+    if (current) current.link.setAttribute("aria-current", "true");
+  }
+  window.addEventListener("scroll", onScroll, {passive: true});
+  onScroll();
+
+  var revealItems = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+  if ("IntersectionObserver" in window){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting){ entry.target.classList.add("in"); observer.unobserve(entry.target); }
+      });
+    }, {threshold: .12, rootMargin: "0px 0px -40px 0px"});
+    revealItems.forEach(function(item){ observer.observe(item); });
+  } else {
+    revealItems.forEach(function(item){ item.classList.add("in"); });
+  }
+})();
+</script>
+</body>
+</html>
